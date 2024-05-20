@@ -171,6 +171,25 @@ fn spdx_from_atoms(atoms: &[Atom]) -> Result<SPDX, SpdxError> {
     })
 }
 
+fn parse_date_time(value: &str) -> chrono::ParseResult<DateTime<Utc>> {
+    // Trailing Z output by recent versions of reuse break chrono.
+    let trimmed = if value.ends_with("+00:00Z") {
+        value
+            .strip_suffix('Z')
+            .expect("always works, we checked first")
+    } else {
+        value
+    };
+    let parsed = if let Some(trimmed) = trimmed.strip_suffix('Z') {
+        // we got Z instead of offset
+        let revised = format!("{trimmed}+00:00");
+        DateTime::parse_from_rfc3339(&revised)?
+    } else {
+        DateTime::parse_from_rfc3339(trimmed)?
+    };
+    Ok(parsed.with_timezone(&Utc))
+}
+
 fn process_atom_for_document_creation_information(
     atom: &Atom,
     mut document_creation_information_in_progress: &mut Option<DocumentCreationInformation>,
@@ -245,8 +264,7 @@ fn process_atom_for_document_creation_information(
             if let Some(document_creation_information) =
                 &mut document_creation_information_in_progress
             {
-                document_creation_information.creation_info.created =
-                    DateTime::parse_from_rfc3339(value)?.with_timezone(&Utc);
+                document_creation_information.creation_info.created = parse_date_time(value)?;
             }
         }
         Atom::CreatorComment(value) => {
@@ -646,8 +664,7 @@ fn process_atom_for_annotations(
             annotation_in_progress.annotator_in_progress = Some(value.clone());
         }
         Atom::AnnotationDate(value) => {
-            annotation_in_progress.date_in_progress =
-                Some(DateTime::parse_from_rfc3339(value)?.with_timezone(&Utc));
+            annotation_in_progress.date_in_progress = Some(parse_date_time(value)?);
         }
         Atom::AnnotationComment(value) => {
             annotation_in_progress.comment_in_progress = Some(value.clone());
@@ -719,6 +736,17 @@ mod test_super {
     };
 
     use super::*;
+
+    #[test]
+    fn datetime_variants_ok() {
+        let with_z = "2024-05-20T14:46:54+00:00Z";
+        let without_z = "2024-05-20T14:46:54+00:00";
+        assert_eq!(parse_date_time(with_z), parse_date_time(without_z));
+        assert!(parse_date_time(with_z).is_ok());
+
+        let only_z = "2024-05-20T14:46:54Z";
+        assert_eq!(parse_date_time(only_z), parse_date_time(without_z));
+    }
 
     #[test]
     fn whole_spdx_is_parsed() {
