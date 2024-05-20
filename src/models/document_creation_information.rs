@@ -250,9 +250,9 @@ mod test {
                 .creation_info
                 .creator_comment,
             Some(
-                r#"This package has been shipped in source and binary form.
+                r"This package has been shipped in source and binary form.
 The binaries were created with gcc 4.5.1 and expect to link to
-compatible system run time libraries."#
+compatible system run time libraries."
                     .to_string()
             )
         );

@@ -15,22 +15,22 @@ use std::result::Result as StdResult;
 
 #[test]
 fn deserialize_json_v2_2() -> Result<()> {
-    Ok(load_spdx("tests/data/SPDXJSONExample-v2.2.spdx.json", spdx_from_json).map(ignore)?)
+    load_spdx("tests/data/SPDXJSONExample-v2.2.spdx.json", spdx_from_json).map(ignore)
 }
 
 #[test]
 fn deserialize_json_v2_3() -> Result<()> {
-    Ok(load_spdx("tests/data/SPDXJSONExample-v2.3.spdx.json", spdx_from_json).map(ignore)?)
+    load_spdx("tests/data/SPDXJSONExample-v2.3.spdx.json", spdx_from_json).map(ignore)
 }
 
 #[test]
 fn deserialize_tag_value_v2_2() -> Result<()> {
-    Ok(load_spdx("tests/data/SPDXTagExample-v2.2.spdx", spdx_from_tag_value).map(ignore)?)
+    load_spdx("tests/data/SPDXTagExample-v2.2.spdx", spdx_from_tag_value).map(ignore)
 }
 
 #[test]
 fn deserialize_tag_value_v2_3() -> Result<()> {
-    Ok(load_spdx("tests/data/SPDXTagExample-v2.3.spdx", spdx_from_tag_value).map(ignore)?)
+    load_spdx("tests/data/SPDXTagExample-v2.3.spdx", spdx_from_tag_value).map(ignore)
 }
 
 /// Helper function for ignoring a value.
