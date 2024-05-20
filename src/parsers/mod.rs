@@ -614,11 +614,11 @@ fn process_atom_for_relationships(
 
 #[derive(Debug, Default)]
 struct AnnotationInProgress {
-    annotator_in_progress: Option<String>,
-    date_in_progress: Option<DateTime<Utc>>,
-    comment_in_progress: Option<String>,
-    type_in_progress: Option<AnnotationType>,
-    spdxref_in_progress: Option<String>,
+    annotator: Option<String>,
+    date: Option<DateTime<Utc>>,
+    comment: Option<String>,
+    annotation_type: Option<AnnotationType>,
+    spdxref: Option<String>,
 }
 
 fn process_annotation(
@@ -627,11 +627,11 @@ fn process_annotation(
     annotations: &mut Vec<Annotation>,
 ) {
     if let AnnotationInProgress {
-        annotator_in_progress: Some(annotator),
-        date_in_progress: Some(date),
-        comment_in_progress: Some(comment),
-        type_in_progress: Some(annotation_type),
-        spdxref_in_progress: Some(spdxref),
+        annotator: Some(annotator),
+        date: Some(date),
+        comment: Some(comment),
+        annotation_type: Some(annotation_type),
+        spdxref: Some(spdxref),
     } = &mut annotation_in_progress
     {
         let annotation = Annotation::new(
@@ -642,11 +642,11 @@ fn process_annotation(
             comment.clone(),
         );
         *annotation_in_progress = AnnotationInProgress {
-            annotator_in_progress: None,
-            comment_in_progress: None,
-            date_in_progress: None,
-            spdxref_in_progress: None,
-            type_in_progress: None,
+            annotator: None,
+            comment: None,
+            date: None,
+            spdxref: None,
+            annotation_type: None,
         };
         annotations.push(annotation);
     }
@@ -661,19 +661,19 @@ fn process_atom_for_annotations(
 
     match atom {
         Atom::Annotator(value) => {
-            annotation_in_progress.annotator_in_progress = Some(value.clone());
+            annotation_in_progress.annotator = Some(value.clone());
         }
         Atom::AnnotationDate(value) => {
-            annotation_in_progress.date_in_progress = Some(parse_date_time(value)?);
+            annotation_in_progress.date = Some(parse_date_time(value)?);
         }
         Atom::AnnotationComment(value) => {
-            annotation_in_progress.comment_in_progress = Some(value.clone());
+            annotation_in_progress.comment = Some(value.clone());
         }
         Atom::AnnotationType(value) => {
-            annotation_in_progress.type_in_progress = Some(*value);
+            annotation_in_progress.annotation_type = Some(*value);
         }
         Atom::SPDXREF(value) => {
-            annotation_in_progress.spdxref_in_progress = Some(value.clone());
+            annotation_in_progress.spdxref = Some(value.clone());
         }
         _ => {}
     }

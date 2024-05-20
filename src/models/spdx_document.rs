@@ -72,7 +72,7 @@ pub struct SPDX {
     #[serde(default)]
     pub annotations: Vec<Annotation>,
 
-    /// Counter for creating SPDXRefs. Is not part of the spec, so don't serialize.
+    /// Counter for creating `SPDXRefs`. Is not part of the spec, so don't serialize.
     #[serde(skip)]
     pub spdx_ref_counter: i32,
 }
